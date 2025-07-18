@@ -6,7 +6,7 @@
 ### Mobile View
 <img src="screenshots/mobile-main.jpg" alt="Darwin Screenshot - Mobile" width="400"/>
 
-Darwin is an interactive web application for creating High-Level Design (HLD) diagrams. Effortlessly drag and drop components like load balancers, databases, microservices, and more onto a canvas, connect them visually, and export or import your designs. Darwin is ideal for architects, engineers, and students who want to quickly sketch, share, and iterate on system architectures.
+Darwin is an interactive web application for creating High-Level Design (HLD) diagrams. Effortlessly drag and drop components like load balancers, databases, microservices, and more onto a canvas, connect them visually, and export or import your designs. Darwin now includes specialized automotive components for designing vehicle system architectures, making it ideal for automotive engineers, software architects, and students working on modern vehicle systems.
 
 ## Darwin in action
 
@@ -17,13 +17,20 @@ Darwin is an interactive web application for creating High-Level Design (HLD) di
 
 - **Drag & Drop Canvas:** Add, move, resize, and connect components visually.
 - **Predefined & Custom Elements:** Includes icons for users, web/mobile clients, gateways, databases, caches, queues, and more. Add your own custom elements as needed.
-- **Smart Connectors:** Draw arrows between components; connectors adjust automatically as you move elements.
+- **Automotive Components:** Specialized components for vehicle architectures:
+  - **Containers:** MCU Container, Rich OS Container, Cloud Container, AWS Instance
+  - **Vehicle Systems:** ECU, TCU, Gateway ECU, VCU, ADAS ECU, Infotainment System
+  - **Sub-components:** Modules, Services, Application Layers, Operating System Layers
+  - **Connectivity:** CAN Bus, Ethernet, LIN Bus connections with labeled arrows
+- **Smart Connectors:** Draw arrows between components with customizable labels and colors; connectors adjust automatically as you move elements.
+- **Container Support:** Components can be nested inside containers with proper parent-child relationships.
+- **Expandable Components:** Application layers and OS layers can contain sub-components (modules/services).
 - **Undo/Redo:** Full undo/redo support for all actions.
 - **Multi-Select & Area Select:** Select multiple elements by holding space and dragging, or by clicking with modifiers.
 - **Rename & Edit:** Double-click to rename any element.
 - **Responsive UI:** Works beautifully on desktop and mobile devices.
 - **Export/Import:** Export your diagram as PNG/JPEG image or JSON. Import diagrams from JSON files.
-- **Example Architectures:** Load sample diagrams for e-commerce, social media, and video streaming systems.
+- **Example Architectures:** Load sample diagrams for e-commerce, social media, video streaming, and automotive systems.
 
 
 ## Getting Started
@@ -72,12 +79,26 @@ npm run preview
 - **Export:** Use the export menu to save as image or JSON.
 - **Import:** Use the import menu to load a diagram from JSON.
 
+### Working with Automotive Components
+
+- **Containers:** Drag MCU Container, Rich OS Container, or Cloud Container from the drawer. Drop other components inside to create hierarchical architectures.
+- **Vehicle Components:** Add ECUs, TCUs, Gateways, and other vehicle systems. Connect them using CAN Bus, Ethernet, or LIN Bus connections.
+- **Sub-components:** Drop Modules or Services into Application Layers or OS Layers to create detailed software architectures.
+- **Connection Labels:** After connecting components, click on the arrow to add labels like "CAN Bus", "Ethernet", etc.
+- **Container Fitting:** Components automatically arrange within containers. The container rendering has been optimized to properly display nested components.
+
 ## Example Diagrams
 
 Find example architectures in the `examples/` and `public/examples/` folders:
 - E-commerce Platform
 - Social Media System
 - Video Streaming Service
+- **Automotive Systems:**
+  - ADAS System Architecture
+  - Cloud-Connected Vehicle
+  - MCU Architecture Design
+  - Rich OS Application Layers
+  - Vehicle Network Topology
 
 You can load these from the app's example menu.
 
