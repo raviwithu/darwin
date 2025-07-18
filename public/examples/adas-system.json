@@ -1,0 +1,181 @@
+{
+  "elements": [
+    {
+      "id": "adas-controller",
+      "type": "ECU",
+      "name": "ADAS Domain Controller",
+      "x": 400,
+      "y": 300,
+      "width": 200,
+      "height": 80,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "front-radar",
+      "type": "SENSOR",
+      "name": "Front Radar",
+      "x": 100,
+      "y": 100,
+      "width": 120,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "front-camera",
+      "type": "SENSOR",
+      "name": "Front Camera",
+      "x": 250,
+      "y": 100,
+      "width": 120,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "lidar",
+      "type": "SENSOR",
+      "name": "LiDAR Sensor",
+      "x": 400,
+      "y": 100,
+      "width": 120,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "side-radar-left",
+      "type": "SENSOR",
+      "name": "Left Side Radar",
+      "x": 100,
+      "y": 200,
+      "width": 120,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "side-radar-right",
+      "type": "SENSOR",
+      "name": "Right Side Radar",
+      "x": 550,
+      "y": 200,
+      "width": 120,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "ethernet-switch",
+      "type": "ETHERNET",
+      "name": "ADAS Ethernet Switch",
+      "x": 350,
+      "y": 450,
+      "width": 300,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "brake-actuator",
+      "type": "ACTUATOR",
+      "name": "Brake Actuator",
+      "x": 100,
+      "y": 550,
+      "width": 120,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "steering-actuator",
+      "type": "ACTUATOR",
+      "name": "Steering Actuator",
+      "x": 250,
+      "y": 550,
+      "width": 120,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "throttle-actuator",
+      "type": "ACTUATOR",
+      "name": "Throttle Actuator",
+      "x": 400,
+      "y": 550,
+      "width": 120,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "gateway",
+      "type": "GATEWAY",
+      "name": "Vehicle Gateway",
+      "x": 700,
+      "y": 300,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "v2x-module",
+      "type": "ECU",
+      "name": "V2X Communication",
+      "x": 700,
+      "y": 400,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "radar-to-controller",
+      "from": "front-radar",
+      "to": "adas-controller"
+    },
+    {
+      "id": "camera-to-controller",
+      "from": "front-camera",
+      "to": "adas-controller"
+    },
+    {
+      "id": "lidar-to-controller",
+      "from": "lidar",
+      "to": "adas-controller"
+    },
+    {
+      "id": "left-radar-to-controller",
+      "from": "side-radar-left",
+      "to": "adas-controller"
+    },
+    {
+      "id": "right-radar-to-controller",
+      "from": "side-radar-right",
+      "to": "adas-controller"
+    },
+    {
+      "id": "controller-to-ethernet",
+      "from": "adas-controller",
+      "to": "ethernet-switch"
+    },
+    {
+      "id": "ethernet-to-brake",
+      "from": "ethernet-switch",
+      "to": "brake-actuator"
+    },
+    {
+      "id": "ethernet-to-steering",
+      "from": "ethernet-switch",
+      "to": "steering-actuator"
+    },
+    {
+      "id": "ethernet-to-throttle",
+      "from": "ethernet-switch",
+      "to": "throttle-actuator"
+    },
+    {
+      "id": "controller-to-gateway",
+      "from": "adas-controller",
+      "to": "gateway"
+    },
+    {
+      "id": "gateway-to-v2x",
+      "from": "gateway",
+      "to": "v2x-module"
+    }
+  ]
+}

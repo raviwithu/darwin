@@ -1,0 +1,167 @@
+{
+  "elements": [
+    {
+      "id": "container_1",
+      "type": "RICH_OS_CONTAINER",
+      "name": "Infotainment System",
+      "x": 100,
+      "y": 100,
+      "width": 400,
+      "height": 500,
+      "children": ["app_layer_1", "sys_layer_1", "boot_layer_1", "hw_layer_1"]
+    },
+    {
+      "id": "app_layer_1",
+      "type": "APPLICATION_LAYER",
+      "name": "Application Layer",
+      "x": 120,
+      "y": 170,
+      "width": 320,
+      "height": 80,
+      "parentId": "container_1",
+      "children": ["module_1", "module_2", "module_3"]
+    },
+    {
+      "id": "sys_layer_1",
+      "type": "SYSTEM_LAYER",
+      "name": "System Layer",
+      "x": 120,
+      "y": 265,
+      "width": 320,
+      "height": 80,
+      "parentId": "container_1"
+    },
+    {
+      "id": "boot_layer_1",
+      "type": "BOOT_LAYER",
+      "name": "Boot Layer",
+      "x": 120,
+      "y": 360,
+      "width": 320,
+      "height": 80,
+      "parentId": "container_1"
+    },
+    {
+      "id": "hw_layer_1",
+      "type": "HARDWARE_LAYER",
+      "name": "Hardware Layer",
+      "x": 120,
+      "y": 455,
+      "width": 320,
+      "height": 80,
+      "parentId": "container_1"
+    },
+    {
+      "id": "module_1",
+      "type": "MODULE",
+      "name": "HMI Module",
+      "x": 130,
+      "y": 200,
+      "parentId": "app_layer_1"
+    },
+    {
+      "id": "module_2",
+      "type": "MODULE",
+      "name": "Navigation",
+      "x": 240,
+      "y": 200,
+      "parentId": "app_layer_1"
+    },
+    {
+      "id": "module_3",
+      "type": "MODULE",
+      "name": "Media Player",
+      "x": 350,
+      "y": 200,
+      "parentId": "app_layer_1"
+    },
+    {
+      "id": "container_2",
+      "type": "MCU_CONTAINER",
+      "name": "Engine Control Unit",
+      "x": 550,
+      "y": 100,
+      "width": 350,
+      "height": 400,
+      "children": ["app_layer_2", "boot_layer_2", "hw_layer_2"]
+    },
+    {
+      "id": "app_layer_2",
+      "type": "APPLICATION_LAYER",
+      "name": "Control Logic",
+      "x": 570,
+      "y": 170,
+      "width": 320,
+      "height": 80,
+      "parentId": "container_2"
+    },
+    {
+      "id": "boot_layer_2",
+      "type": "BOOT_LAYER",
+      "name": "Bootloader",
+      "x": 570,
+      "y": 265,
+      "width": 320,
+      "height": 80,
+      "parentId": "container_2"
+    },
+    {
+      "id": "hw_layer_2",
+      "type": "HARDWARE_LAYER",
+      "name": "MCU Hardware",
+      "x": 570,
+      "y": 360,
+      "width": 320,
+      "height": 80,
+      "parentId": "container_2"
+    },
+    {
+      "id": "cloud_container",
+      "type": "CLOUD_CONTAINER",
+      "name": "Vehicle Cloud Services",
+      "x": 950,
+      "y": 100,
+      "width": 450,
+      "height": 400,
+      "children": ["service_1", "service_2", "service_3"]
+    },
+    {
+      "id": "service_1",
+      "type": "MICROSERVICE",
+      "name": "Telematics Service",
+      "x": 970,
+      "y": 170,
+      "parentId": "cloud_container"
+    },
+    {
+      "id": "service_2",
+      "type": "MICROSERVICE",
+      "name": "OTA Update Service",
+      "x": 1130,
+      "y": 170,
+      "parentId": "cloud_container"
+    },
+    {
+      "id": "service_3",
+      "type": "MICROSERVICE",
+      "name": "Fleet Management",
+      "x": 1290,
+      "y": 170,
+      "parentId": "cloud_container"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "conn_1",
+      "from": "container_1",
+      "to": "container_2",
+      "protocol": "CAN"
+    },
+    {
+      "id": "conn_2",
+      "from": "container_1",
+      "to": "cloud_container",
+      "protocol": "Ethernet"
+    }
+  ]
+}

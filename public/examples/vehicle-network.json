@@ -1,0 +1,181 @@
+{
+  "elements": [
+    {
+      "id": "gateway-ecu",
+      "type": "GATEWAY",
+      "name": "Central Gateway",
+      "x": 400,
+      "y": 300,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "can-bus-1",
+      "type": "CAN_BUS",
+      "name": "Powertrain CAN",
+      "x": 100,
+      "y": 200,
+      "width": 200,
+      "height": 40,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "can-bus-2",
+      "type": "CAN_BUS",
+      "name": "Body CAN",
+      "x": 100,
+      "y": 400,
+      "width": 200,
+      "height": 40,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "ethernet-backbone",
+      "type": "ETHERNET",
+      "name": "Automotive Ethernet",
+      "x": 600,
+      "y": 300,
+      "width": 200,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "engine-ecu",
+      "type": "ECU",
+      "name": "Engine Control Unit",
+      "x": 50,
+      "y": 100,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "transmission-ecu",
+      "type": "ECU",
+      "name": "Transmission ECU",
+      "x": 250,
+      "y": 100,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "body-control",
+      "type": "ECU",
+      "name": "Body Control Module",
+      "x": 50,
+      "y": 500,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "door-ecu",
+      "type": "ECU",
+      "name": "Door ECU",
+      "x": 250,
+      "y": 500,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "adas-ecu",
+      "type": "ECU",
+      "name": "ADAS Controller",
+      "x": 650,
+      "y": 150,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "infotainment",
+      "type": "ECU",
+      "name": "Infotainment System",
+      "x": 650,
+      "y": 450,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "lin-bus",
+      "type": "LIN_BUS",
+      "name": "Door LIN",
+      "x": 450,
+      "y": 500,
+      "width": 180,
+      "height": 40,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "flexray",
+      "type": "FLEXRAY",
+      "name": "Safety FlexRay",
+      "x": 450,
+      "y": 100,
+      "width": 200,
+      "height": 40,
+      "systemType": "vehicle"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "engine-to-can1",
+      "from": "engine-ecu",
+      "to": "can-bus-1"
+    },
+    {
+      "id": "trans-to-can1",
+      "from": "transmission-ecu",
+      "to": "can-bus-1"
+    },
+    {
+      "id": "can1-to-gateway",
+      "from": "can-bus-1",
+      "to": "gateway-ecu"
+    },
+    {
+      "id": "body-to-can2",
+      "from": "body-control",
+      "to": "can-bus-2"
+    },
+    {
+      "id": "door-to-can2",
+      "from": "door-ecu",
+      "to": "can-bus-2"
+    },
+    {
+      "id": "can2-to-gateway",
+      "from": "can-bus-2",
+      "to": "gateway-ecu"
+    },
+    {
+      "id": "gateway-to-ethernet",
+      "from": "gateway-ecu",
+      "to": "ethernet-backbone"
+    },
+    {
+      "id": "adas-to-ethernet",
+      "from": "adas-ecu",
+      "to": "ethernet-backbone"
+    },
+    {
+      "id": "infotainment-to-ethernet",
+      "from": "infotainment",
+      "to": "ethernet-backbone"
+    },
+    {
+      "id": "door-to-lin",
+      "from": "door-ecu",
+      "to": "lin-bus"
+    },
+    {
+      "id": "gateway-to-flexray",
+      "from": "gateway-ecu",
+      "to": "flexray"
+    }
+  ]
+}

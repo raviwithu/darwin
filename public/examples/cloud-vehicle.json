@@ -1,0 +1,200 @@
+{
+  "elements": [
+    {
+      "id": "vehicle-gateway",
+      "type": "GATEWAY",
+      "name": "Vehicle Telematics Gateway",
+      "x": 100,
+      "y": 300,
+      "width": 200,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "vehicle-ecu1",
+      "type": "ECU",
+      "name": "Connected Services ECU",
+      "x": 50,
+      "y": 200,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "vehicle-ecu2",
+      "type": "ECU",
+      "name": "Infotainment System",
+      "x": 50,
+      "y": 400,
+      "width": 160,
+      "height": 60,
+      "systemType": "vehicle"
+    },
+    {
+      "id": "mobile-network",
+      "type": "CUSTOM",
+      "name": "4G/5G Network",
+      "x": 350,
+      "y": 300,
+      "width": 160,
+      "height": 60
+    },
+    {
+      "id": "load-balancer",
+      "type": "LOAD_BALANCER",
+      "name": "AWS Load Balancer",
+      "x": 600,
+      "y": 300,
+      "width": 160,
+      "height": 60,
+      "systemType": "cloud"
+    },
+    {
+      "id": "api-gateway",
+      "type": "API_GATEWAY",
+      "name": "API Gateway",
+      "x": 850,
+      "y": 300,
+      "width": 160,
+      "height": 60,
+      "systemType": "cloud"
+    },
+    {
+      "id": "kubernetes-cluster",
+      "type": "KUBERNETES",
+      "name": "EKS Cluster",
+      "x": 750,
+      "y": 150,
+      "width": 300,
+      "height": 80,
+      "systemType": "cloud"
+    },
+    {
+      "id": "docker-telemetry",
+      "type": "DOCKER",
+      "name": "Telemetry Service",
+      "x": 600,
+      "y": 450,
+      "width": 160,
+      "height": 60,
+      "systemType": "cloud"
+    },
+    {
+      "id": "docker-ota",
+      "type": "DOCKER",
+      "name": "OTA Update Service",
+      "x": 800,
+      "y": 450,
+      "width": 160,
+      "height": 60,
+      "systemType": "cloud"
+    },
+    {
+      "id": "docker-diagnostics",
+      "type": "DOCKER",
+      "name": "Remote Diagnostics",
+      "x": 1000,
+      "y": 450,
+      "width": 160,
+      "height": 60,
+      "systemType": "cloud"
+    },
+    {
+      "id": "aws-s3",
+      "type": "AWS_SERVICE",
+      "name": "S3 Storage",
+      "x": 600,
+      "y": 600,
+      "width": 160,
+      "height": 60,
+      "systemType": "cloud"
+    },
+    {
+      "id": "aws-dynamodb",
+      "type": "AWS_SERVICE",
+      "name": "DynamoDB",
+      "x": 800,
+      "y": 600,
+      "width": 160,
+      "height": 60,
+      "systemType": "cloud"
+    },
+    {
+      "id": "aws-lambda",
+      "type": "AWS_SERVICE",
+      "name": "Lambda Functions",
+      "x": 1000,
+      "y": 600,
+      "width": 160,
+      "height": 60,
+      "systemType": "cloud"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "ecu1-to-gateway",
+      "from": "vehicle-ecu1",
+      "to": "vehicle-gateway"
+    },
+    {
+      "id": "ecu2-to-gateway",
+      "from": "vehicle-ecu2",
+      "to": "vehicle-gateway"
+    },
+    {
+      "id": "gateway-to-network",
+      "from": "vehicle-gateway",
+      "to": "mobile-network"
+    },
+    {
+      "id": "network-to-lb",
+      "from": "mobile-network",
+      "to": "load-balancer"
+    },
+    {
+      "id": "lb-to-api",
+      "from": "load-balancer",
+      "to": "api-gateway"
+    },
+    {
+      "id": "api-to-k8s",
+      "from": "api-gateway",
+      "to": "kubernetes-cluster"
+    },
+    {
+      "id": "api-to-telemetry",
+      "from": "api-gateway",
+      "to": "docker-telemetry"
+    },
+    {
+      "id": "api-to-ota",
+      "from": "api-gateway",
+      "to": "docker-ota"
+    },
+    {
+      "id": "api-to-diagnostics",
+      "from": "api-gateway",
+      "to": "docker-diagnostics"
+    },
+    {
+      "id": "telemetry-to-s3",
+      "from": "docker-telemetry",
+      "to": "aws-s3"
+    },
+    {
+      "id": "telemetry-to-dynamodb",
+      "from": "docker-telemetry",
+      "to": "aws-dynamodb"
+    },
+    {
+      "id": "ota-to-s3",
+      "from": "docker-ota",
+      "to": "aws-s3"
+    },
+    {
+      "id": "diagnostics-to-lambda",
+      "from": "docker-diagnostics",
+      "to": "aws-lambda"
+    }
+  ]
+}

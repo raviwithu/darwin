@@ -1,0 +1,142 @@
+{
+  "elements": [
+    {
+      "id": "app-layer",
+      "type": "APPLICATION_LAYER",
+      "name": "Safety Application (ASIL-D)",
+      "x": 300,
+      "y": 100,
+      "width": 300,
+      "height": 80,
+      "layer": "application",
+      "systemType": "mcu"
+    },
+    {
+      "id": "rtos-layer",
+      "type": "SYSTEM_LAYER",
+      "name": "RTOS (FreeRTOS/AUTOSAR)",
+      "x": 300,
+      "y": 250,
+      "width": 300,
+      "height": 80,
+      "layer": "system",
+      "systemType": "mcu"
+    },
+    {
+      "id": "boot-layer",
+      "type": "BOOT_LAYER",
+      "name": "Bootloader (Secure Boot)",
+      "x": 300,
+      "y": 400,
+      "width": 300,
+      "height": 80,
+      "layer": "boot",
+      "systemType": "mcu"
+    },
+    {
+      "id": "hardware-layer",
+      "type": "HARDWARE_LAYER",
+      "name": "MCU (ARM Cortex-M/R)",
+      "x": 300,
+      "y": 550,
+      "width": 300,
+      "height": 80,
+      "layer": "hardware",
+      "systemType": "mcu"
+    },
+    {
+      "id": "can-interface",
+      "type": "CAN_BUS",
+      "name": "CAN Interface",
+      "x": 50,
+      "y": 350,
+      "width": 180,
+      "height": 40,
+      "systemType": "mcu"
+    },
+    {
+      "id": "sensor-input",
+      "type": "SENSOR",
+      "name": "Safety Sensors",
+      "x": 100,
+      "y": 200,
+      "width": 120,
+      "height": 60,
+      "systemType": "mcu"
+    },
+    {
+      "id": "actuator-output",
+      "type": "ACTUATOR",
+      "name": "Safety Actuators",
+      "x": 680,
+      "y": 200,
+      "width": 120,
+      "height": 60,
+      "systemType": "mcu"
+    },
+    {
+      "id": "flash-memory",
+      "type": "HARDWARE_LAYER",
+      "name": "Flash Memory",
+      "x": 100,
+      "y": 550,
+      "width": 160,
+      "height": 80,
+      "layer": "hardware",
+      "systemType": "mcu"
+    },
+    {
+      "id": "watchdog",
+      "type": "HARDWARE_LAYER",
+      "name": "Watchdog Timer",
+      "x": 640,
+      "y": 550,
+      "width": 160,
+      "height": 80,
+      "layer": "hardware",
+      "systemType": "mcu"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "app-to-rtos",
+      "from": "app-layer",
+      "to": "rtos-layer"
+    },
+    {
+      "id": "rtos-to-boot",
+      "from": "rtos-layer",
+      "to": "boot-layer"
+    },
+    {
+      "id": "boot-to-hw",
+      "from": "boot-layer",
+      "to": "hardware-layer"
+    },
+    {
+      "id": "sensor-to-app",
+      "from": "sensor-input",
+      "to": "app-layer"
+    },
+    {
+      "id": "app-to-actuator",
+      "from": "app-layer",
+      "to": "actuator-output"
+    },
+    {
+      "id": "can-to-rtos",
+      "from": "can-interface",
+      "to": "rtos-layer"
+    },
+    {
+      "id": "flash-to-hw",
+      "from": "flash-memory",
+      "to": "hardware-layer"
+    },
+    {
+      "id": "watchdog-to-hw",
+      "from": "watchdog",
+      "to": "hardware-layer"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Canvas, CanvasHandle } from './components/Canvas';
-import { ElementData, ConnectorData, DiagramData, ElementType } from './types';
+import { ElementData, DiagramData, ElementType } from './types';
 import { ELEMENT_CONFIG, ELEMENT_DIMENSIONS } from './constants';
 import { HamburgerIcon, TrashIcon, UndoIcon } from './components/Icons';
 import { ExamplesModal } from './components/ExamplesModal';

@@ -1,0 +1,161 @@
+{
+  "elements": [
+    {
+      "id": "app-layer-1",
+      "type": "APPLICATION_LAYER",
+      "name": "HMI Applications",
+      "x": 100,
+      "y": 50,
+      "width": 240,
+      "height": 80,
+      "layer": "application",
+      "systemType": "richOS"
+    },
+    {
+      "id": "app-layer-2",
+      "type": "APPLICATION_LAYER",
+      "name": "Navigation App",
+      "x": 360,
+      "y": 50,
+      "width": 240,
+      "height": 80,
+      "layer": "application",
+      "systemType": "richOS"
+    },
+    {
+      "id": "app-layer-3",
+      "type": "APPLICATION_LAYER",
+      "name": "Media Player",
+      "x": 620,
+      "y": 50,
+      "width": 240,
+      "height": 80,
+      "layer": "application",
+      "systemType": "richOS"
+    },
+    {
+      "id": "system-layer-1",
+      "type": "SYSTEM_LAYER",
+      "name": "Android/Linux OS",
+      "x": 100,
+      "y": 200,
+      "width": 300,
+      "height": 80,
+      "layer": "system",
+      "systemType": "richOS"
+    },
+    {
+      "id": "system-layer-2",
+      "type": "SYSTEM_LAYER",
+      "name": "Middleware Services",
+      "x": 420,
+      "y": 200,
+      "width": 300,
+      "height": 80,
+      "layer": "system",
+      "systemType": "richOS"
+    },
+    {
+      "id": "system-layer-3",
+      "type": "SYSTEM_LAYER",
+      "name": "HAL Layer",
+      "x": 740,
+      "y": 200,
+      "width": 120,
+      "height": 80,
+      "layer": "system",
+      "systemType": "richOS"
+    },
+    {
+      "id": "boot-layer",
+      "type": "BOOT_LAYER",
+      "name": "U-Boot / UEFI",
+      "x": 300,
+      "y": 350,
+      "width": 360,
+      "height": 80,
+      "layer": "boot",
+      "systemType": "richOS"
+    },
+    {
+      "id": "hardware-layer-1",
+      "type": "HARDWARE_LAYER",
+      "name": "SoC (Snapdragon/Tegra)",
+      "x": 100,
+      "y": 500,
+      "width": 240,
+      "height": 80,
+      "layer": "hardware",
+      "systemType": "richOS"
+    },
+    {
+      "id": "hardware-layer-2",
+      "type": "HARDWARE_LAYER",
+      "name": "Display & Touch",
+      "x": 360,
+      "y": 500,
+      "width": 240,
+      "height": 80,
+      "layer": "hardware",
+      "systemType": "richOS"
+    },
+    {
+      "id": "hardware-layer-3",
+      "type": "HARDWARE_LAYER",
+      "name": "Storage & Memory",
+      "x": 620,
+      "y": 500,
+      "width": 240,
+      "height": 80,
+      "layer": "hardware",
+      "systemType": "richOS"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "app1-to-system1",
+      "from": "app-layer-1",
+      "to": "system-layer-1"
+    },
+    {
+      "id": "app2-to-system1",
+      "from": "app-layer-2",
+      "to": "system-layer-1"
+    },
+    {
+      "id": "app3-to-system2",
+      "from": "app-layer-3",
+      "to": "system-layer-2"
+    },
+    {
+      "id": "system1-to-boot",
+      "from": "system-layer-1",
+      "to": "boot-layer"
+    },
+    {
+      "id": "system2-to-boot",
+      "from": "system-layer-2",
+      "to": "boot-layer"
+    },
+    {
+      "id": "system3-to-boot",
+      "from": "system-layer-3",
+      "to": "boot-layer"
+    },
+    {
+      "id": "boot-to-hw1",
+      "from": "boot-layer",
+      "to": "hardware-layer-1"
+    },
+    {
+      "id": "boot-to-hw2",
+      "from": "boot-layer",
+      "to": "hardware-layer-2"
+    },
+    {
+      "id": "boot-to-hw3",
+      "from": "boot-layer",
+      "to": "hardware-layer-3"
+    }
+  ]
+}

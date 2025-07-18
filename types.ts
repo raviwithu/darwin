@@ -15,6 +15,36 @@ export enum ElementType {
   AuthService = 'AUTH_SERVICE',
   Search = 'SEARCH',
   ObjectStorage = 'OBJECT_STORAGE',
+  // Automotive Components
+  ECU = 'ECU',
+  CANBus = 'CAN_BUS',
+  LINBus = 'LIN_BUS',
+  FlexRay = 'FLEXRAY',
+  Ethernet = 'ETHERNET',
+  Gateway = 'GATEWAY',
+  Sensor = 'SENSOR',
+  Actuator = 'ACTUATOR',
+  // System Layers
+  ApplicationLayer = 'APPLICATION_LAYER',
+  SystemLayer = 'SYSTEM_LAYER',
+  BootLayer = 'BOOT_LAYER',
+  HardwareLayer = 'HARDWARE_LAYER',
+  // Cloud Components
+  Docker = 'DOCKER',
+  Kubernetes = 'KUBERNETES',
+  AWSService = 'AWS_SERVICE',
+  // Container Components
+  RichOSContainer = 'RICH_OS_CONTAINER',
+  MCUContainer = 'MCU_CONTAINER',
+  CloudContainer = 'CLOUD_CONTAINER',
+  AWSInstance = 'AWS_INSTANCE',
+  // Sub-components
+  Module = 'MODULE',
+  Service = 'SERVICE',
+  Process = 'PROCESS',
+  Driver = 'DRIVER',
+  Firmware = 'FIRMWARE',
+  Component = 'COMPONENT',
 }
 
 export interface ElementData {
@@ -25,12 +55,19 @@ export interface ElementData {
   y: number;
   width?: number;
   height?: number;
+  layer?: string;
+  systemType?: 'richOS' | 'mcu' | 'cloud' | 'vehicle';
+  parentId?: string;
+  children?: string[]; // Array of child element IDs
+  isExpandable?: boolean; // For components that can contain sub-components
 }
 
 export interface ConnectorData {
   id:string;
   from: string;
   to: string;
+  protocol?: 'CAN' | 'LIN' | 'FlexRay' | 'Ethernet' | 'HTTP' | 'TCP' | 'UDP';
+  lineStyle?: 'solid' | 'dashed' | 'dotted';
 }
 
 export interface Point {

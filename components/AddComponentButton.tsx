@@ -31,24 +31,26 @@ export const AddComponentButton: React.FC<AddComponentButtonProps> = ({ onAddCom
         const startX = e.clientX;
         const startY = e.clientY;
 
-        const handlePointerMove = (moveEvent: PointerEvent) => {
+        const handlePointerMove = (moveEvent: Event) => {
+            const pointerEvent = moveEvent as PointerEvent;
             if (dragInfoRef.current.isDragging) {
-                setDragPreview(p => (p ? { ...p, x: moveEvent.clientX, y: moveEvent.clientY } : null));
+                setDragPreview(p => (p ? { ...p, x: pointerEvent.clientX, y: pointerEvent.clientY } : null));
                 return;
             }
 
-            const dx = Math.abs(moveEvent.clientX - startX);
-            const dy = Math.abs(moveEvent.clientY - startY);
+            const dx = Math.abs(pointerEvent.clientX - startX);
+            const dy = Math.abs(pointerEvent.clientY - startY);
 
             if (dx > 5 || dy > 5) {
                 dragInfoRef.current.isDragging = true;
-                setDragPreview({ type, x: moveEvent.clientX, y: moveEvent.clientY });
+                setDragPreview({ type, x: pointerEvent.clientX, y: pointerEvent.clientY });
                 setTimeout(() => setIsMenuOpen(false), 0);
             }
         };
 
-        const handlePointerUp = (upEvent: PointerEvent) => {
-            target.releasePointerCapture(upEvent.pointerId);
+        const handlePointerUp = (upEvent: Event) => {
+            const pointerEvent = upEvent as PointerEvent;
+            target.releasePointerCapture(pointerEvent.pointerId);
             target.removeEventListener('pointermove', handlePointerMove);
             target.removeEventListener('pointerup', handlePointerUp);
             target.removeEventListener('pointercancel', handlePointerUp);
@@ -61,8 +63,8 @@ export const AddComponentButton: React.FC<AddComponentButtonProps> = ({ onAddCom
                     const dropEvent = new CustomEvent('hld-drop', {
                         detail: {
                             type: type,
-                            clientX: upEvent.clientX,
-                            clientY: upEvent.clientY,
+                            clientX: pointerEvent.clientX,
+                            clientY: pointerEvent.clientY,
                         },
                     });
                     canvasEl.dispatchEvent(dropEvent);

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useLayoutEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { ElementData, ConnectorData, ElementType, Point, DiagramData } from '../types';
-import { ELEMENT_CONFIG, ELEMENT_DIMENSIONS } from '../constants';
+import { ELEMENT_CONFIG, ELEMENT_DIMENSIONS, isContainer, isExpandable } from '../constants';
 import { Element } from './Element';
 import { ConnectorLine } from './ConnectorLine';
 import { InfoIcon } from "./Icons";
@@ -75,18 +75,18 @@ const getAttachmentPoint = (el: ElementData, targetCenter: Point, offset = 16): 
 };
 
 // Helper: returns true if a point is near a line segment
-function isPointNearLine(p: Point, a: Point, b: Point, threshold = 12): boolean {
-    // Calculate distance from point p to line ab
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    const length = Math.sqrt(dx * dx + dy * dy);
-    if (length === 0) return false;
-    // Project p onto ab, clamp to segment
-    const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (length * length)));
-    const closest = { x: a.x + t * dx, y: a.y + t * dy };
-    const dist = Math.sqrt((p.x - closest.x) ** 2 + (p.y - closest.y) ** 2);
-    return dist <= threshold;
-}
+// function isPointNearLine(p: Point, a: Point, b: Point, threshold = 12): boolean {
+//     // Calculate distance from point p to line ab
+//     const dx = b.x - a.x;
+//     const dy = b.y - a.y;
+//     const length = Math.sqrt(dx * dx + dy * dy);
+//     if (length === 0) return false;
+//     // Project p onto ab, clamp to segment
+//     const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / (length * length)));
+//     const closest = { x: a.x + t * dx, y: a.y + t * dy };
+//     const dist = Math.sqrt((p.x - closest.x) ** 2 + (p.y - closest.y) ** 2);
+//     return dist <= threshold;
+// }
 
 const CanvasComponent: React.ForwardRefRenderFunction<CanvasHandle, CanvasProps> = (
     { diagram: propDiagram, setDiagram, selectedElementIds, setSelectedElementIds, selectedConnectorIds, setSelectedConnectorIds, exportRef },
@@ -258,10 +258,30 @@ const CanvasComponent: React.ForwardRefRenderFunction<CanvasHandle, CanvasProps>
             const dy = (currentPointerPosition.y - draggingElement.initialPointerPos.y) / transform.scale;
             const draggedIds = new Set(draggingElement.initialElementsPos.map(p => p.id));
             
+            // Get all descendant IDs of dragged elements
+            const getAllDescendants = (elementId: string, allElements: ElementData[]): string[] => {
+                const element = allElements.find(el => el.id === elementId);
+                if (!element || !element.children || element.children.length === 0) return [];
+                
+                const descendants: string[] = [...element.children];
+                element.children.forEach(childId => {
+                    descendants.push(...getAllDescendants(childId, allElements));
+                });
+                return descendants;
+            };
+            
+            // Add all descendants to draggedIds
+            const allDraggedIds = new Set(draggedIds);
+            draggedIds.forEach(id => {
+                getAllDescendants(id, localDiagram.elements).forEach(descId => {
+                    allDraggedIds.add(descId);
+                });
+            });
+            
             setLocalDiagram(d => ({ ...d, elements: d.elements.map(el => {
-                if (!draggedIds.has(el.id)) return el;
-                const initialPos = draggingElement.initialElementsPos.find(p => p.id === el.id);
-                if (!initialPos) return el;
+                if (!allDraggedIds.has(el.id)) return el;
+                const initialPos = draggingElement.initialElementsPos.find(p => p.id === el.id) || 
+                                  { id: el.id, x: el.x - dx, y: el.y - dy }; // For descendants not in initial list
                 return { ...el, x: initialPos.x + dx, y: initialPos.y + dy };
             })}));
 
@@ -284,7 +304,74 @@ const CanvasComponent: React.ForwardRefRenderFunction<CanvasHandle, CanvasProps>
 
     const handlePointerUp = useCallback((e: MouseEvent | TouchEvent) => {
         if (draggingElement || resizingElement) {
-            setDiagram(localDiagramRef.current);
+            // Handle dropping elements into containers
+            if (draggingElement) {
+                const updatedDiagram = { ...localDiagramRef.current };
+                const draggedIds = draggingElement.initialElementsPos.map(p => p.id);
+                
+                // Check if any dragged element is dropped on a container or expandable component
+                draggedIds.forEach(draggedId => {
+                    const draggedElement = updatedDiagram.elements.find(el => el.id === draggedId);
+                    if (!draggedElement || isContainer(draggedElement.type)) return;
+                    
+                    const elCenterX = draggedElement.x + (draggedElement.width || ELEMENT_CONFIG[draggedElement.type].defaultWidth || ELEMENT_DIMENSIONS.width) / 2;
+                    const elCenterY = draggedElement.y + (draggedElement.height || ELEMENT_CONFIG[draggedElement.type].defaultHeight || ELEMENT_DIMENSIONS.height) / 2;
+                    
+                    // Find expandable component at drop position (for sub-components)
+                    const expandableAtPosition = updatedDiagram.elements.find(el => {
+                        if (!isExpandable(el.type) || el.id === draggedId) return false;
+                        const w = el.width || ELEMENT_CONFIG[el.type].defaultWidth || ELEMENT_DIMENSIONS.width;
+                        const h = el.height || ELEMENT_CONFIG[el.type].defaultHeight || ELEMENT_DIMENSIONS.height;
+                        return elCenterX >= el.x && elCenterX <= el.x + w &&
+                               elCenterY >= el.y && elCenterY <= el.y + h;
+                    });
+                    
+                    // Find container at drop position
+                    const containerAtPosition = updatedDiagram.elements.find(el => {
+                        if (!isContainer(el.type) || el.id === draggedId) return false;
+                        const w = el.width || ELEMENT_CONFIG[el.type].defaultWidth || ELEMENT_DIMENSIONS.width;
+                        const h = el.height || ELEMENT_CONFIG[el.type].defaultHeight || ELEMENT_DIMENSIONS.height;
+                        return elCenterX >= el.x && elCenterX <= el.x + w &&
+                               elCenterY >= el.y && elCenterY <= el.y + h;
+                    });
+                    
+                    // Determine new parent - expandable takes precedence for sub-components
+                    const isSubComponent = [ElementType.Module, ElementType.Service, ElementType.Process, 
+                                          ElementType.Driver, ElementType.Firmware, ElementType.Component].includes(draggedElement.type);
+                    const newParent = (isSubComponent && expandableAtPosition) ? expandableAtPosition : containerAtPosition;
+                    
+                    // Update parent-child relationships
+                    if (newParent && newParent.id !== draggedElement.parentId) {
+                        // Remove from old parent
+                        if (draggedElement.parentId) {
+                            const oldParent = updatedDiagram.elements.find(el => el.id === draggedElement.parentId);
+                            if (oldParent && oldParent.children) {
+                                oldParent.children = oldParent.children.filter(id => id !== draggedId);
+                            }
+                        }
+                        
+                        // Add to new parent
+                        draggedElement.parentId = newParent.id;
+                        if (!newParent.children) {
+                            newParent.children = [];
+                        }
+                        if (!newParent.children.includes(draggedId)) {
+                            newParent.children.push(draggedId);
+                        }
+                    } else if (!newParent && draggedElement.parentId) {
+                        // Remove from parent if dropped outside any container
+                        const oldParent = updatedDiagram.elements.find(el => el.id === draggedElement.parentId);
+                        if (oldParent && oldParent.children) {
+                            oldParent.children = oldParent.children.filter(id => id !== draggedId);
+                        }
+                        draggedElement.parentId = undefined;
+                    }
+                });
+                
+                setDiagram(updatedDiagram);
+            } else {
+                setDiagram(localDiagramRef.current);
+            }
         }
 
         if (pressTimerRef.current) {
@@ -516,17 +603,117 @@ const CanvasComponent: React.ForwardRefRenderFunction<CanvasHandle, CanvasProps>
         if (type && canvasRef.current) {
             const worldPos = screenToWorld(clientX, clientY);
             const config = ELEMENT_CONFIG[type];
+            
+            // Check if dropping on a container or expandable component
+            let parentId: string | undefined;
+            let adjustedPos = { ...worldPos };
+            
+            // First check for expandable components (layers) at the drop position
+            const expandableElement = elements.find(el => {
+                if (!isExpandable(el.type)) return false;
+                const w = el.width || ELEMENT_CONFIG[el.type].defaultWidth || ELEMENT_DIMENSIONS.width;
+                const h = el.height || ELEMENT_CONFIG[el.type].defaultHeight || ELEMENT_DIMENSIONS.height;
+                return worldPos.x >= el.x && worldPos.x <= el.x + w &&
+                       worldPos.y >= el.y && worldPos.y <= el.y + h;
+            });
+            
+            // Then check for containers
+            const containerElement = elements.find(el => {
+                if (!isContainer(el.type)) return false;
+                const w = el.width || ELEMENT_CONFIG[el.type].defaultWidth || ELEMENT_DIMENSIONS.width;
+                const h = el.height || ELEMENT_CONFIG[el.type].defaultHeight || ELEMENT_DIMENSIONS.height;
+                return worldPos.x >= el.x && worldPos.x <= el.x + w &&
+                       worldPos.y >= el.y && worldPos.y <= el.y + h;
+            });
+            
+            // Determine parent - expandable components take precedence over containers
+            if (expandableElement && !isContainer(type) && !isExpandable(type)) {
+                // Dropping a sub-component on an expandable component
+                parentId = expandableElement.id;
+                
+                // Position sub-components in a row below the expandable component
+                const existingChildren = elements.filter(el => el.parentId === expandableElement.id);
+                const elementW = config.defaultWidth || ELEMENT_DIMENSIONS.width;
+                const elementH = config.defaultHeight || ELEMENT_DIMENSIONS.height;
+                
+                adjustedPos.x = expandableElement.x + 60 + existingChildren.length * (elementW + 10);
+                adjustedPos.y = expandableElement.y + (expandableElement.height || ELEMENT_CONFIG[expandableElement.type].defaultHeight || ELEMENT_DIMENSIONS.height) + elementH / 2 + 10;
+            } else if (containerElement && !isContainer(type)) {
+                parentId = containerElement.id;
+                
+                // Auto-layout: Calculate position based on existing children
+                const existingChildren = elements.filter(el => el.parentId === containerElement.id);
+                const containerW = containerElement.width || ELEMENT_CONFIG[containerElement.type].defaultWidth || ELEMENT_DIMENSIONS.width;
+                const elementW = config.defaultWidth || ELEMENT_DIMENSIONS.width;
+                const elementH = config.defaultHeight || ELEMENT_DIMENSIONS.height;
+                
+                const padding = 20;
+                const headerHeight = 50;
+                const spacing = 15; // Space between elements
+                
+                if (existingChildren.length === 0) {
+                    // First child - position at top left with padding
+                    adjustedPos.x = containerElement.x + elementW / 2 + padding;
+                    adjustedPos.y = containerElement.y + headerHeight + elementH / 2 + padding;
+                } else {
+                    // Auto-layout based on element type
+                    if (type === ElementType.ApplicationLayer || type === ElementType.SystemLayer || 
+                        type === ElementType.BootLayer || type === ElementType.HardwareLayer) {
+                        // Stack layers vertically
+                        const layerOrder = [ElementType.ApplicationLayer, ElementType.SystemLayer, 
+                                          ElementType.BootLayer, ElementType.HardwareLayer];
+                        const currentIndex = layerOrder.indexOf(type);
+                        
+                        // Calculate Y position based on layer order
+                        let yPos = containerElement.y + headerHeight + padding + elementH / 2;
+                        for (let i = 0; i < currentIndex; i++) {
+                            const existingLayer = existingChildren.find(child => child.type === layerOrder[i]);
+                            if (existingLayer) {
+                                const layerHeight = existingLayer.height || ELEMENT_CONFIG[existingLayer.type].defaultHeight || ELEMENT_DIMENSIONS.height;
+                                yPos += layerHeight + spacing;
+                            }
+                        }
+                        
+                        adjustedPos.x = containerElement.x + containerW / 2;
+                        adjustedPos.y = yPos;
+                    } else {
+                        // For other components, arrange in a grid
+                        const cols = Math.floor((containerW - 2 * padding) / (elementW + spacing));
+                        const row = Math.floor(existingChildren.length / cols);
+                        const col = existingChildren.length % cols;
+                        
+                        adjustedPos.x = containerElement.x + padding + elementW / 2 + col * (elementW + spacing);
+                        adjustedPos.y = containerElement.y + headerHeight + padding + elementH / 2 + row * (elementH + spacing);
+                    }
+                }
+            }
+            
             const newElement: ElementData = {
                 id: `el_${Date.now()}`,
                 type,
                 name: config.defaultName,
-                x: worldPos.x - (config.defaultWidth || ELEMENT_DIMENSIONS.width) / 2,
-                y: worldPos.y - (config.defaultHeight || ELEMENT_DIMENSIONS.height) / 2,
+                x: adjustedPos.x - (config.defaultWidth || ELEMENT_DIMENSIONS.width) / 2,
+                y: adjustedPos.y - (config.defaultHeight || ELEMENT_DIMENSIONS.height) / 2,
+                parentId,
             };
             if(config.defaultWidth) newElement.width = config.defaultWidth;
             if(config.defaultHeight) newElement.height = config.defaultHeight;
 
-            setDiagram(d => ({ ...d, elements: [...d.elements, newElement] }));
+            setDiagram(d => {
+                const updatedElements = [...d.elements, newElement];
+                // If element has a parent, update parent's children array
+                if (parentId) {
+                    return {
+                        ...d,
+                        elements: updatedElements.map(el => 
+                            el.id === parentId 
+                                ? { ...el, children: [...(el.children || []), newElement.id] }
+                                : el
+                        )
+                    };
+                }
+                return { ...d, elements: updatedElements };
+            });
             setSelectedElementIds([newElement.id]);
         }
     };
@@ -716,17 +903,38 @@ const CanvasComponent: React.ForwardRefRenderFunction<CanvasHandle, CanvasProps>
                     />
                 )}
 
-                {elements.map(el => (
-                    <Element
-                        key={el.id}
-                        data={el}
-                        onRename={handleRename}
-                        onStartConnection={handleStartConnection}
-                        onPointerDown={(e) => handleElementPointerDown(e, el.id)}
-                        isSelected={selectedElementIds.includes(el.id)}
-                        isSpacePressed={isSpacePressed}
-                    />
-                ))}
+                {/* Render elements in proper z-index order: containers first, then children */}
+                {elements
+                    .sort((a, b) => {
+                        // Containers should render first (lower z-index)
+                        const aIsContainer = isContainer(a.type);
+                        const bIsContainer = isContainer(b.type);
+                        if (aIsContainer && !bIsContainer) return -1;
+                        if (!aIsContainer && bIsContainer) return 1;
+                        // Then by parent-child relationship
+                        if (a.parentId === b.id) return 1;
+                        if (b.parentId === a.id) return -1;
+                        return 0;
+                    })
+                    .map(el => {
+                        const zIndex = el.parentId ? 10 : isContainer(el.type) ? 1 : 5;
+                        
+                        return (
+                            <div key={el.id} style={{ position: 'absolute', zIndex }}>
+                                <Element
+                                    data={el}
+                                    allElements={elements}
+                                    onRename={handleRename}
+                                    onStartConnection={handleStartConnection}
+                                    onPointerDown={(e) => handleElementPointerDown(e, el.id)}
+                                    isSelected={selectedElementIds.includes(el.id)}
+                                    selectedElementIds={selectedElementIds}
+                                    isSpacePressed={isSpacePressed}
+                                    renderChildren={isContainer(el.type)}
+                                />
+                            </div>
+                        );
+                    })}
             </div>
             <div
                 className="fixed bottom-4 right-4 z-50 bg-white rounded-full shadow p-1 cursor-pointer export-ignore info-container md:bottom-6 md:right-6"
